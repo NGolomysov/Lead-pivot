@@ -2,10 +2,13 @@
 
 This a a simple Python web application which I have done to simplify my working process as marketing specialist.
 
+At the end of every month I create a summarized report, which includes some figures about the number of applications received.
+Previously (before I had applied) it was calculated manually, so I've decided to automatize it.
 
 **What this program does?**
 
 This program transforms uploaded excel spreadsheet to pivot table with some additional info.
+Excel spreadsheets must have specific columns, so I added an example in file **'Test_data.xlsx'**.
 
 **To use this programm you have to:**
 
