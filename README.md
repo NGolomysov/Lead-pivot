@@ -1,6 +1,6 @@
 **What is it?**
 
-This a a simple Python web application which I have done to simplify my working process as marketing specialist.
+This is a simple Python web application which I have done to simplify my working process as marketing specialist.
 
 At the end of every month I create a summarized report, which includes some figures about the number of applications received.
 Previously (before I had applied) it was calculated manually, so I've decided to automatize it.
