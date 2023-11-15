@@ -1,5 +1,6 @@
 **What is it?**
-This a a simple Python web application which I have done to simplify my working process a as marketing specialist.
+
+This a a simple Python web application which I have done to simplify my working process as marketing specialist.
 
 
 **What this program does?**
