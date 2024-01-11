@@ -53,7 +53,7 @@ try:
     )
 
     mngname = st.sidebar.multiselect(
-        'Выберите коды курсов для отчёта:',
+        'Выберите менеджеров для отчёта:',
         options=df['MngName'].unique(),
         default=df['MngName'].unique()
     )
