@@ -13,6 +13,85 @@ st.set_page_config(page_title='Воронка клиентов',
                    page_icon=':page_facing_up:',
                    layout='wide')
 
+active_courses = ['-',
+                    'ХТМЛ2',
+                    'ЯВАСКР1',
+                    'ЯВАСКР2',
+                    'РНР1',
+                    'РНР2',
+                    'К-МПЕРСЗУП',
+                    'К-МПОЦ',
+                    'СИКВЕЛ1',
+                    'ОПРОГ',
+                    'СИПП',
+                    'СИ',
+                    'СИШ',
+                    'МПЕРС1',
+                    'МПЕРС2',
+                    'НАЛОГ',
+                    '1С1',
+                    '1СЗУП',
+                    'ЭКС1',
+                    'ЭКС3',
+                    'ЭКС4',
+                    'ЭКС5',
+                    'ЭКС2',
+                    'УПРУЧ',
+                    'ЭФРУК',
+                    'БРЕНД',
+                    'БПРОЦ',
+                    'СЕО',
+                    'ПСИИ',
+                    'ДС4ПСД',
+                    'ДС3МСА',
+                    'ДС2ИМО',
+                    'ДС1МАД',
+                    'О-ЦИФРА',
+                    'О-ПРОДЖЕКТ',
+                    'О-ВКМ',
+                    'К-КАДРЗУПС',
+                    'КАДР2С',
+                    'КАДР1С',
+                    'СИКВЕЛ2',
+                    'ПИТОН2',
+                    'ПИТОН1',
+                    'К-РУКЛОГ',
+                    'ВЭД',
+                    'К-БУХ',
+                    'ПМИ',
+                    'К-МАСТЕР',
+                    'К-АНАЛИЗ',
+                    'ЭКС6',
+                    'ЛОГСКЛАД',
+                    'ЛОГТРАНСПОРТ',
+                    'К-РУКПОДР',
+                    'ХТМЛ1',
+                    'ЛКТ',
+                    'ПРОДАКШН',
+                    'АКИНФОГР',
+                    'ПЕРЕВОД-ИТ',
+                    'МИС',
+                    'ПАТЕНТ',
+                    'ГУПРУК',
+                    'УИС-ПРАВО',
+                    'УИС-ЦИФРА',
+                    'РЕИНЖРУК',
+                    'АРХДАН-ПРО',
+                    'ИНЖДАН-ПРО',
+                    'АП-ТПЛШ',
+                    'СТОХОШТАМП',
+                    'КОМПАС-ГРАФ',
+                    'ЭКСПКОНТРОЛЬ',
+                    'ТСП-ПК',
+                    'АДИИ-ПРО',
+                    'К-ЛОГИСТ23',
+                    'УПИТ-ПРО',
+                    'ДАТАСАЙНС-ПРО',
+                    'АФХД',
+                    'ТАМОЖНЯ22',
+                    'ТБУХ23',
+                    'КОМПАС22']
+
 uploaded_file = st.file_uploader("Загрузите файл")
 
 def generate_excel_download_link(df):
@@ -37,30 +116,55 @@ def get_data():
                        }, inplace=True)
 
     df['Source'] = df['Source'].fillna('Пустые')
+    df['MngName'] = df['MngName'].fillna('NaN')
     df['Date'] = pd.to_datetime(df['Date'])
     return df
 
+
 try:
 
-    df = get_data()
+    ddf = get_data()
+    df = ddf.copy()
 
-    #Sidebar
+    if 'codes' not in st.session_state:
+        st.session_state['codes'] = ddf['Code'].unique()
+
+    if st.session_state.get('all'):
+        st.session_state['codes'] = ddf['Code'].unique()
+    elif st.session_state.get('comm'):
+        st.session_state['codes'] = ddf.loc[ddf['Code'].isin(active_courses)]['Code'].unique()
+    elif st.session_state.get('spec'):
+        st.session_state['codes'] = ddf.loc[~ddf['Code'].isin(active_courses)]['Code'].unique()
+
+    col1, col2, col3 = st.columns([1, 1, 1])
+
+    with col1:
+        st.button('Показать все курсы', key='all')
+
+    with col2:
+        st.button('Показать комм курсы', key='comm')
+
+    with col3:
+        st.button('Показать спецпроекты', key='spec')
 
     code = st.sidebar.multiselect(
         'Выберите коды курсов для отчёта:',
-        options=df['Code'].unique(),
-        default=df['Code'].unique()
+        options=ddf['Code'].unique(),
+        default=st.session_state['codes']
     )
 
     mngname = st.sidebar.multiselect(
         'Выберите менеджеров для отчёта:',
-        options=df['MngName'].unique(),
-        default=df['MngName'].unique()
+        options=ddf['MngName'].unique(),
+        default=ddf['MngName'].unique(),
+        key='names'
     )
 
-    df = df.query(
+    df = ddf.query(
         'Code == @code & MngName == @mngname'
     )
+
+    #df = sidebar(df, ddf)
 
     df['total_by_source'] = (df.groupby(['Source'])['Id'].transform(lambda x: len(x.unique())))
 
@@ -93,8 +197,6 @@ try:
                 report = report.drop(columns=['Дубль'])
         except KeyError:
             report['Брак/дубль'] = 0
-
-
 
     report_clients = df.loc[df['Status'] == 'Стал клиентом'].reset_index(drop = True)
 
